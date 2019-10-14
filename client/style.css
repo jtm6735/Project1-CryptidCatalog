@@ -1,0 +1,87 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+    background-image: url(https://people.rit.edu/jtm6735/430/cryptidBackground.png);
+}
+
+#top {
+  border-bottom: black 2px solid;
+  width: 80%;
+  text-align: center;
+  margin: 0 auto;
+  background-color: rgba(168,224,171,0.7);
+  padding-bottom: 50px;
+    
+}
+
+#top h1 {
+  font-size: 2em;
+}
+
+#content {
+  font-size: 2em;
+  text-align: center;
+}
+
+#content p{
+    text-align: left;
+    width: 75%;
+    margin-left: 45%;
+    font-family: 'Play', sans-serif;
+}
+
+.flex-container{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(168,224,171,0.7);
+    width: 80%;
+    margin: 0 auto;
+
+}
+
+#messages{
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+    font-family: 'Ropa Sans', sans-serif;
+    font-size: 36px;
+    border-bottom: black 4px solid;
+    padding-top: 12.5px;
+    padding-bottom: 12.5px;
+}
+
+div{
+    width: 75%;
+    margin: 0 auto;
+    padding: 25px;
+    border-bottom: black 4px solid;
+}
+
+img{
+    width: 540px;
+    height: 540px;
+    float: left;
+    padding: 20px;
+    border-right: 4px solid black;
+}
+
+label{
+    margin: 15px;
+}
+
+#top label{
+    font-family: 'Play', sans-serif;
+    font-size: 36px;
+}
+
+input{
+    height: 36px;
+    font-size: 24px;
+}
+
+h3{
+    font-family: 'Ropa Sans', sans-serif;
+    font-size: 72px;
+}

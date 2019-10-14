@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Cryptid Catalog</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Bitter|Oswald|Play|Ropa+Sans&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script type="text/babel">
+      const parseJSON = (xhr, content) => {
+      const obj = JSON.parse(xhr.response);
+      console.dir(obj);
+      
+      // When recieving a message, this takes it turns into readable html
+      if(obj.message) {
+        const p = document.createElement('p');
+        p.textContent = `Message: ${obj.message}`;
+      }
+      
+      // If there is a bunch of users, this if/for loop instatiates elements to be filled in with data
+      // taken from the users and their key. This gets appended into the content so that it is actually shown afterwards
+      if(obj.users) {
+          content.innerHTML = '';
+          for(let key in obj.users){
+              if(obj.users.hasOwnProperty(key)){
+              const div = document.createElement('div');
+              const name = document.createElement('p');
+              const location = document.createElement('p');
+              const description = document.createElement('p');
+              const img = document.createElement('IMG');
+              
+              name.innerHTML = `<p><h1>Cryptid Name:</h1> ${obj.users[key].name}</p>`;
+              location.innerHTML = `<p><h1>Location:</h1> ${obj.users[key].location}</p>`;
+              description.innerHTML = `<p><h1>Description:</h1> ${obj.users[key].description}</p>`;
+                  
+              img.setAttribute('src', obj.users[key].image);
+                   
+              div.appendChild(img);
+              div.appendChild(name);
+              div.appendChild(location); 
+              div.appendChild(description);      
+              content.appendChild(div); 
+              }
+          }
+      }        
+    };
+
+    // Originally, I had created another section strictly for reading out the status codes sent out
+    // This didn't line up with how I was reading things onload so I instead pushed into console.logs
+    // Anyways, depending on which type of status code is returned, handle response shoots out a message in accordinance with the status code sent
+    const handleResponse = (xhr,parseResponse) => {
+      
+      switch(xhr.status) {
+        case 200:
+          console.log(`Creature has succesfully been logged`);
+          break;
+        case 201:
+          console.log('Log the Creature');
+          break;
+        case 204:
+          console.log('Log Updated');
+          return;
+        case 400:
+          console.log(`Not all of the forms have been filled out<`);
+          break;
+        case 404:
+        console.log(`Resource Not Found`);
+          break;
+        default:
+          console.log(`Error code not implemented by client.`);
+          break;
+      }
+        if(xhr.status != 204 && parseResponse){
+            parseJSON(xhr, content);
+        }
+        
+        else{
+            console.log('received')
+        }
+    };
+
+    // sendPost is used to get references to the fields filled out by users and throw that information into its own form to get checked
+    const sendPost = (e, nameForm) => {
+   
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
+      
+      const nameField = nameForm.querySelector('#nameField');
+      const locationField = nameForm.querySelector('#locationField');
+      const descriptionField = nameForm.querySelector('#descriptionField');
+      const imageField = nameForm.querySelector('#imageField');
+        
+      const xhr = new XMLHttpRequest();
+      xhr.open(nameMethod, nameAction);
+      
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader ('Accept', 'application/json');
+      xhr.onload = () => handleResponse(xhr,true);
+      
+      const formData = `name=${nameField.value}&location=${locationField.value}&description=${descriptionField.value}&image=${imageField.value}`;
+      
+      xhr.send(formData);
+      sendGet(e,nameForm);
+      e.preventDefault();
+      return false;
+    };
+
+    // The sole purpose of this is to send Get so that the "users" cryptids can be shown
+    const sendGet = (e, nameForm) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("get", "/getUsers");
+        xhr.onload = () => handleResponse(xhr, true);
+      
+      xhr.setRequestHeader ('Accept', 'application/json');
+      xhr.send();
+        
+      e.preventDefault();
+        
+      return false;
+    }
+    
+    // Sets up the nameForm variable to be used and creates the initial default Cryptids
+    const init = (e) => {
+      const nameForm = document.querySelector('#nameForm');
+      const addUser = (e) => sendPost(e, nameForm);
+      nameForm.addEventListener('submit', addUser);
+      const userForm = document.querySelector('#userForm');
+      const getUser = (e) => sendGet(e, userForm);
+      getUser(e,nameForm);
+    };
+    window.onload = init;
+  </script>
+</head>
+<body>
+  <section id="top">
+    <h3>Cryptid Catalog</h3>
+    <form id="nameForm" action="/addUser" method="post">
+      <label for="name">Name: </label>
+      <input id="nameField" type="text" name="name"/>
+      <label for="location">Location: </label>
+      <input id="locationField" type="text" name="location"/>
+      <label for="description">Description: </label>
+      <input id="descriptionField" type="text" name="description"/>    
+      <label for="image">Image: </label>
+      <input id="imageField" type="url" name="image">
+      <input type="submit" value="Add User" />    
+    </form>
+    <form id="userForm" action="/getUsers" method="get">
+<!--
+      <select id='urlField'>
+        <option value='/getUsers'>/getUsers</option>
+        <option value='/notReal'>/notReal</option>
+      </select>
+      <select id="methodSelect">
+        <option value="get">GET</option>
+        <option value="head">HEAD</option>
+      </select>
+      <input type="submit" value="send" />
+-->
+    </form>
+  </section>
+  <section id="content" class="flex-container">
+  </section>
+</body>
+</html>
